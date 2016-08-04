@@ -9,29 +9,28 @@ import InputTodoItem from '../components/InputTodoItem';
 export default class Home extends React.Component {
 	constructor() {
 		super();
+		this.getTodo=this.getTodos.bind(this);
 		this.state={
 			todos: TodoStore.getAllTodos()
 		};
 	}
 
 	componentWillMount() {
-		TodoStore.on('create', () => {
-			this.setState({
-				todos: TodoStore.getAllTodos()
-			});
-		});
+		TodoStore.on('create', this.getTodo);
+		TodoStore.on('edit', this.getTodo);
+		TodoStore.on('delete', this.getTodo);		
+	}
 
-		TodoStore.on('edit', () => {
-			this.setState({
-				todos: TodoStore.getAllTodos()
-			});
-		});
+	componentWillUnmount() {
+		TodoStore.removeListener('create', this.getTodo);
+		TodoStore.removeListener('edit', this.getTodo);
+		TodoStore.removeListener('delete', this.getTodo);
+	}
 
-		TodoStore.on('delete', () => {
-			this.setState({
-				todos: TodoStore.getAllTodos()
-			});
-		});		
+	getTodos() {
+		this.setState({
+			todos: TodoStore.getAllTodos()
+		});
 	}
 
 	render() {
